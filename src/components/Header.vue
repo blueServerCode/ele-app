@@ -62,6 +62,8 @@ export default {
 }
 .header-title {
   flex: 1;
+  font-size: 16px;
+  font-weight:550;
 }
 .is-left {
   text-align: left;

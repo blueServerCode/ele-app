@@ -4,25 +4,19 @@
 
     <!-- 显示收货地址 -->
     <div class="address-view">
-      <div class="address-card" v-for="(address,index) in allAddress" :key="index">
+      <div class="address-card" >
         <div class="address-card-select">
-          <i class="fa fa-check-circle" v-if="selectIndex == index"></i>
+          <i class="fa fa-check-circle" ></i>
         </div>
 
-        <div class="address-card-body" @click="setAddressInfo(address,index)">
-          <p class="address-card-title">
-            <span class="username">{{address.name}}</span>
-            <span v-if="address.sex" class="gender">{{address.sex}}</span>
-            <span class="phone">{{address.phone}}</span>
-          </p>
+        <div class="address-card-body" @click="setAddressInfo(address)">
           <p class="address-card-address">
-            <span class="tag" v-if="address.tag">{{address.tag}}</span>
-            <span class="address-text">{{address.address}}</span>
+            <span class="address-text">{{allAddress}}</span>
           </p>
         </div>
         <div class="address-card-edit">
-          <i @click="handleEdit(address)" class="fa fa-edit"></i>
-          <i @click="handleDelete(address,index)" class="fa fa-close"></i>
+          <i @click="handleEdit(allAddress)" class="fa fa-edit"></i>
+          <i @click="handleDelete(allAddress)" class="fa fa-close"></i>
         </div>
       </div>
     </div>
@@ -67,10 +61,7 @@ export default {
       });
     },
     getData() {
-      this.$axios(`/api/user/user_info/${localStorage.ele_login}`).then(res => {
-        // console.log(res.data);
-        this.allAddress = res.data.myAddress;
-      });
+        this.allAddress = this.$store.getters.address;
     },
     handleEdit(address) {
       this.$router.push({
@@ -178,6 +169,8 @@ export default {
 }
 .address-text {
   line-height: 4.533333vw;
+  font-size: 17px;
+  margin-top: 13px;
 }
 
 /* 编辑和删除 */

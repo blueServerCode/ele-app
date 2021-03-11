@@ -1,154 +1,88 @@
 <template>
-  <div class="order">
-    <div class="order-card-body" v-for="(order,index) in orderlist" :key="index">
-      <div class="order-card-wrap" v-if="order.shopInfoName">
-        <img :src="order.image_path" alt />
-        <div class="order-card-content">
-          <div class="order-card-head">
-            <div class="title">
-              <a>
-                <span>{{order.shopInfoName}}</span>
-                <i class="fa fa-angle-right"></i>
-              </a>
-              <p>订单已完成</p>
-            </div>
-            <p class="date-time">{{order.date}}</p>
-          </div>
-          <div class="order-card-detail">
-            <p class="detail">{{order.selectFoodsName}}</p>
-            <p class="price">¥{{order.totalPrice}}</p>
-          </div>
+    <div class="order">
+        <div class="title">
+            <span>订单</span>
+            <i class="fa fa-search"></i>
         </div>
-      </div>
-      <div class="order-card-bottom">
-        <button class="cardbutton" @click="$router.push('/shop')">再来一单</button>
-      </div>
+        <div class="remind">您还没有订单!</div>
+        <div class="recommend">—————— 为您推荐附近精选 ——————</div>
+        <div class="shoplist" v-for="(item, index) in restaurants" :key="index">
+            <IndexShop class="shop" :restaurant="item.restaurant" />
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
+import IndexShop from "../components/IndexShop";
 export default {
-  name: "order",
-  data() {
-    return {
-      orderlist: []
-    };
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.getData();
-    });
-  },
-  methods: {
-    getData() {
-      this.$axios(`/api/user/orders/${localStorage.ele_login}`).then(res => {
-        // console.log(res.data);
-        this.orderlist = res.data.orderlist;
-      });
-    }
-  }
+    name: "order",
+    components: {
+        IndexShop,
+    },
+    data() {
+        return {
+            restaurants: [],
+            page: 1,
+            size: 5,
+        };
+    },
+    mounted() {
+        this.loadData();
+    },
+    methods: {
+        loadData() {
+            // 拉取商家信息
+            this.$axios
+                .post(
+                    `/api/profile/restaurants/${this.page}/${this.size}`,
+                    this.data
+                )
+                .then((res) => {
+                    console.log(res.data);
+                    this.restaurants = res.data;
+                });
+        },
+    },
 };
 </script>
 
 <style scoped>
 .order {
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  box-sizing: border-box;
-  margin-bottom: 2.666667vw;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    background-color: rgb(245, 245, 245);
 }
-.order-card-body {
-  margin-top: 2.666667vw;
-  background-color: #fff;
-  padding: 3.733333vw 0 0 4vw;
+.title {
+    font-weight: 550;
+    font-size: 18px;
+    padding: 10px;
+    background-color: rgb(0, 143, 255);
+    color: white;
+    padding-top: 15px;
+    padding-bottom: 15px;
 }
-.order-card-wrap {
-  display: flex;
+.title span {
+    margin-right: 300px;
 }
-.order-card-wrap > img {
-  height: 8.533333vw;
-  border-radius: 0.533333vw;
-  border: 1px solid #eee;
-  width: 8.533333vw;
-  margin-right: 2.666667vw;
+.remind {
+    margin-top: 60px;
+    margin-left: 140px;
+    font-size: 18px;
+    color: gray;
 }
-.order-card-content {
-  flex: 1;
+.recommend {
+    font-size: 15px;
+    color: gray;
+    margin-top: 60px;
+    text-align: center;
+    padding: 10px;
 }
-.order-card-head {
-  border-bottom: 1px solid #eee;
-  padding-right: 3.466667vw;
-  padding-bottom: 2.666667vw;
+.shoplist {
+    padding: 5px;
+    border-bottom: 0.5px solid gray;
 }
-.order-card-head .title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.order-card-head .title > a {
-  font-size: 1rem;
-  line-height: 1.5em;
-  color: #333;
-  text-decoration: none;
-}
-.order-card-head .title > a > span {
-  display: inline-block;
-  max-width: 10em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.order-card-head .title > a > i {
-  margin-left: 1.333333vw;
-  color: #ccc;
-  vertical-align: super;
-}
-.order-card-head .title > p {
-  font-size: 0.8rem;
-  text-align: right;
-  color: #333;
-  max-width: 14em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.date-time {
-  font-size: 0.6rem;
-  color: #999;
-}
-.order-card-detail {
-  display: flex;
-  justify-content: space-between;
-  padding: 4vw 3.466667vw 4vw 0;
-  font-size: 0.8rem;
-}
-.order-card-detail .detail {
-  color: #666;
-  display: flex;
-  align-items: center;
-}
-.order-card-detail .price {
-  flex-basis: 16vw;
-  text-align: right;
-  color: #333;
-  font-weight: 700;
-}
-.order-card-bottom {
-  display: flex;
-  border-top: 1px solid #eee;
-  padding: 2.666667vw 4.266667vw;
-  justify-content: flex-end;
-}
-.cardbutton {
-  padding: 1.333333vw 2.666667vw;
-  border: 1px solid #2395ff;
-  border-radius: 0.533333vw;
-  background-color: transparent;
-  outline: none;
-  font-size: 0.8rem;
-  color: #2395ff;
-  margin-left: 2vw;
+.shop {
+    border-radius: 10px;
 }
 </style>
